@@ -135,7 +135,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    printf -v MERGED_TEXT "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
+    printf -v MERGED_TEXT "%b" '${MERGED_TEXT}\n${VALUE}' # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
 done
 
 PARAMETERS=$(echo -e ${MERGED_TEXT} | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns
