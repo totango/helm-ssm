@@ -32,10 +32,11 @@ and passed on to Tiller.
 Usage:
 Simply use helm as you would normally, but add 'ssm' before any command,
 the plugin will automatically search for values with the pattern:
+
 {{ssm /path/to/parameter aws-region}}
 
 and replace them with their decrypted value.
-Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key
+Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
 
 
 E.g:
@@ -135,7 +136,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    printf -v MERGED_TEXT "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
+    printf -v MERGED_TEXT "%q" "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
 done
 
 PARAMETERS=$(echo -e ${MERGED_TEXT} | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns
