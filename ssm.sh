@@ -32,10 +32,11 @@ and passed on to Tiller.
 Usage:
 Simply use helm as you would normally, but add 'ssm' before any command,
 the plugin will automatically search for values with the pattern:
-{{ssm /path/to/parameter aws-region}}
+
+    {{ssm /path/to/parameter aws-region}}
 
 and replace them with their decrypted value.
-Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key
+Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
 
 
 E.g:
@@ -135,7 +136,8 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    printf -v MERGED_TEXT "%b" '${MERGED_TEXT}\n${VALUE}' # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
+    VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g)
+    printf -v MERGED_TEXT "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
 done
 
 PARAMETERS=$(echo -e ${MERGED_TEXT} | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns
@@ -159,11 +161,11 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    MERGED_TEXT=$(echo "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${PARAM_OUTPUT}:g") # we use ':' as the delimiter because the path can contain '/'s
+    MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${PARAM_OUTPUT}:g") # we use ':' as the delimiter because the path can contain '/'s
 done <<< "${PARAMETERS}"
 
 set +e
-echo "${MERGED_TEXT}" | helm "${OPTIONS[@]}" --values -
+echo -e "${MERGED_TEXT}" | helm "${OPTIONS[@]}" --values -
 EXIT_CODE=$?
 if [[ ${EXIT_CODE} -ne 0 ]]; then
     echo -e "${RED}[SSM]${NOC} Helm exited with a non 0 code - this is most likely not a problem with the SSM plugin, but a problem with Helm itself." >&2
