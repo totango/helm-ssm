@@ -1,5 +1,5 @@
 name: "ssm"
-version: "1.0.0"
+version: "1.0.1"
 usage: "AWS SSM parameter injection into Helm value files for git storage"
 description: |-
   AWS SSM parameter injection in Helm value files
@@ -13,10 +13,11 @@ description: |-
   Usage:
   Simply use helm as you would normally, but add 'ssm' before any command,
   the plugin will automatically search for values with the pattern:
-  {{ssm /path/to/parameter aws-region}}
+
+      {{ssm /path/to/parameter aws-region}}
 
   and replace them with their decrypted value.
-  Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key
+  Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
 
 
   E.g:
