@@ -149,10 +149,11 @@ echo -e "==============================================="
 set +e
 # using 'while' instead of 'for' allows us to use newline as a delimiter instead of a space
 while read -r PARAM_STRING; do
-    CLEANED_PARAM_STRING=$(echo ${PARAM_STRING:2} | rev | cut -c 3- | rev) # we cut the '{{' and  '}}' at the beginning and end
+    CLEANED_PARAM_STRING=$(echo ${PARAM_STRING:2} | rev | cut -c 3- | rev) # we cut the '{{' and '}}' at the beginning and end
     PARAM_PATH=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 2) # {{ssm */param/path* us-east-1}}
     REGION=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 3) # {{ssm /param/path *us-east-1*}}
     
+
     PARAM_OUTPUT="$((aws ssm get-parameter --with-decryption --name ${PARAM_PATH} --region ${REGION} | jq -r '.Parameter.Value') 2>&1)" # Get the parameter value or error message
     EXIT_CODE=$?
 
@@ -162,6 +163,7 @@ while read -r PARAM_STRING; do
     fi
 
     MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${PARAM_OUTPUT}:g") # we use ':' as the delimiter because the path can contain '/'s
+    sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
 
 set +e
