@@ -136,19 +136,26 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g)
+    VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g) # we turn single % to %% to escape percent signs
     printf -v MERGED_TEXT "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
 done
 
-PARAMETERS=$(echo -e ${MERGED_TEXT} | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns
-echo -e "${GREEN}[SSM]${NOC} Found $(echo "${PARAMETERS}" | wc -l | xargs) parameters"
-echo -e "${GREEN}[SSM]${NOC} Parameters: \n${PARAMETERS}"
+PARAMETERS=$(echo -e "${MERGED_TEXT}" | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns, delete empty lines
+PARAMETERS_LENGTH=$(echo "${PARAMETERS}" | grep -v '^$' | wc -l | xargs)
+if [ "${PARAMETERS_LENGTH}" != 0 ]; then
+    echo -e "${GREEN}[SSM]${NOC} Found $(echo "${PARAMETERS}" | grep -v '^$' | wc -l | xargs) parameters"
+    echo -e "${GREEN}[SSM]${NOC} Parameters: \n${PARAMETERS[@]}"
+else
+    echo -e "${GREEN}[SSM]${NOC} No parameters were found, continuing..."
+fi
 echo -e "==============================================="
 
 
 set +e
 # using 'while' instead of 'for' allows us to use newline as a delimiter instead of a space
 while read -r PARAM_STRING; do
+    [ -z "${PARAM_STRING}" ] && continue # if parameter is empty for some reason
+
     CLEANED_PARAM_STRING=$(echo ${PARAM_STRING:2} | rev | cut -c 3- | rev) # we cut the '{{' and '}}' at the beginning and end
     PARAM_PATH=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 2) # {{ssm */param/path* us-east-1}}
     REGION=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 3) # {{ssm /param/path *us-east-1*}}
