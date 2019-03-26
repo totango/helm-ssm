@@ -37,6 +37,8 @@ the plugin will automatically search for values with the pattern:
 
 and replace them with their decrypted value.
 Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
+Note #2: Wrap the template with quotes, otherwise helm will confuse the brackets for json, and will fail rendering.
+Note #3: Currently, helm-ssm does not work when the value of the parameter is in the default chart values.
 
 
 E.g:
@@ -45,8 +47,8 @@ helm ssm install stable/docker-registry --values value-file1.yaml -f value-file2
 value-file1.yaml:
 ---
 secrets:
-  haSharedSecret: {{ssm /mgmt/docker-registry/shared-secret us-east-1}}
-  htpasswd: {{ssm /mgmt/docker-registry/htpasswd us-east-1}}
+  haSharedSecret: "{{ssm /mgmt/docker-registry/shared-secret us-east-1}}"
+  htpasswd: "{{ssm /mgmt/docker-registry/htpasswd us-east-1}}"
 ---
 EOF
     exit 0
@@ -59,13 +61,6 @@ if ! [[ -x "$(command -v aws)" ]]; then
     echo -e "${RED}[ERROR] aws cli is not installed." >&2
     exit 1
 fi
-
-# jq
-if ! [[ -x "$(command -v jq)" ]]; then
-    echo -e "${RED}[ERROR] jq is not installed." >&2
-    exit 1
-fi
-
 
 
 # get the first command (install\list\template\etc...)
@@ -161,7 +156,7 @@ while read -r PARAM_STRING; do
     REGION=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 3) # {{ssm /param/path *us-east-1*}}
     
 
-    PARAM_OUTPUT="$((aws ssm get-parameter --with-decryption --name ${PARAM_PATH} --region ${REGION} | jq -r '.Parameter.Value') 2>&1)" # Get the parameter value or error message
+    PARAM_OUTPUT="$(aws ssm get-parameter --with-decryption --name ${PARAM_PATH} --output text --query Parameter.Value --region ${REGION} 2>&1)" # Get the parameter value or error message
     EXIT_CODE=$?
 
     if [[ ${EXIT_CODE} -ne 0 ]]; then
@@ -169,7 +164,7 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${PARAM_OUTPUT}:g") # we use ':' as the delimiter because the path can contain '/'s
+    MERGED_TEXT=$(echo -e "${MERGED_TEXT//${PARAM_STRING}/${PARAM_OUTPUT}}")
     sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
 
