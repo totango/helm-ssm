@@ -20,9 +20,11 @@ the plugin will automatically search for values with the pattern:
 {{ssm /path/to/parameter aws-region}}
 ```
 and replace them with their decrypted value.
-Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
-Note #2: Wrap the template with quotes, otherwise helm will confuse the brackets for json, and will fail rendering.
-Note #3: Currently, helm-ssm does not work when the value of the parameter is in the default chart values.
+>Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
+
+>Note #2: Wrap the template with quotes, otherwise helm will confuse the brackets for json, and will fail rendering.
+
+>Note #3: Currently, helm-ssm does not work when the value of the parameter is in the default chart values.
 
 E.g:
 ```bash
