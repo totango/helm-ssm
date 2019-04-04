@@ -72,7 +72,7 @@ if [[ $# -eq 0 || "$cmd" == "help" || "$cmd" == "-h" || "$cmd" == "--help" ]]; t
 fi
 
 # if the command is not "install" or "upgrade", or just a single command (no value files is a given in this case), pass the args to the regular helm command
-if [[ $# -eq 1 || ( "$cmd" != "install" && "$cmd" != "upgrade" ) ]]; then
+if [[ $# -eq 1 || ( "$cmd" != "install" && "$cmd" != "upgrade" && "$cmd" != "template") ]]; then
     set +e # disable fail-fast
     helm "$*"
     EXIT_CODE=$?
