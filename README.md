@@ -20,6 +20,13 @@ the plugin will automatically search for values with the pattern:
 {{ssm /path/to/parameter aws-region}}
 ```
 and replace them with their decrypted value.
+
+Optionally, if you have the same parameter for different profiles, you can set it like this:
+```
+{{ssm /path/to/parameter aws-region profile}}
+```
+
+
 >Note: You must have IAM access to the parameters you're trying to decrypt, and their KMS key.
 
 >Note #2: Wrap the template with quotes, otherwise helm will confuse the brackets for json, and will fail rendering.

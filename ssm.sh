@@ -154,9 +154,11 @@ while read -r PARAM_STRING; do
     CLEANED_PARAM_STRING=$(echo ${PARAM_STRING:2} | rev | cut -c 3- | rev) # we cut the '{{' and '}}' at the beginning and end
     PARAM_PATH=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 2) # {{ssm */param/path* us-east-1}}
     REGION=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 3) # {{ssm /param/path *us-east-1*}}
-    
-
-    PARAM_OUTPUT="$(aws ssm get-parameter --with-decryption --name ${PARAM_PATH} --output text --query Parameter.Value --region ${REGION} 2>&1)" # Get the parameter value or error message
+    PROFILE=$(echo ${CLEANED_PARAM_STRING:2} | cut -d' ' -f 4) # {{ssm /param/path us-east-1 *production*}}
+    if [[ -n ${PROFILE}  ]]; then
+       PROFILE_PARAM="--profile ${PROFILE}"  
+    fi
+    PARAM_OUTPUT="$(aws ssm get-parameter --with-decryption --name ${PARAM_PATH} --output text --query Parameter.Value --region ${REGION} $PROFILE_PARAM  2>&1)" # Get the parameter value or error message
     EXIT_CODE=$?
 
     if [[ ${EXIT_CODE} -ne 0 ]]; then
