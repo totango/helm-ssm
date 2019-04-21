@@ -72,7 +72,7 @@ if [[ $# -eq 0 || "$cmd" == "help" || "$cmd" == "-h" || "$cmd" == "--help" ]]; t
 fi
 
 # if the command is not "install" or "upgrade", or just a single command (no value files is a given in this case), pass the args to the regular helm command
-if [[ $# -eq 1 || ( "$cmd" != "install" && "$cmd" != "upgrade" ) ]]; then
+if [[ $# -eq 1 || ( "$cmd" != "install" && "$cmd" != "upgrade" && "$cmd" != "template") ]]; then
     set +e # disable fail-fast
     helm "$*"
     EXIT_CODE=$?
@@ -166,7 +166,8 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    MERGED_TEXT=$(echo -e "${MERGED_TEXT//${PARAM_STRING}/${PARAM_OUTPUT}}")
+    SECRET_TEXT=$(echo -e "${PARAM_OUTPUT}" | sed -E "s:([\$\.\*\[\\\^\&]):\\ \1:g" | sed -E "s/\ /\\\/g")
+    MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${SECRET_TEXT}:g")
     sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
 
