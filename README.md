@@ -45,6 +45,11 @@ secrets:
   htpasswd: "{{ssm /mgmt/docker-registry/htpasswd us-east-1}}"
 ```
 
+## Limitations
+Since helm-ssm strives to be a no-dependencies tool, it is written using only shell commands, which introduces some limitations:
+
+1. You cant have `|` in the parameter value - helm-ssm uses `sed` to replace the placeholders with the value of the parameter, and uses `|` as the delimiter, which means the value of the parameter can't also have it. As far as I know, other special characters are allowed.
+
 ## Testing
 ```
 $ ./ssm.sh install tests/testchart/ --debug --dry-run -f tests/testchart/values.yaml

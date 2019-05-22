@@ -8,17 +8,16 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NOC='\033[0m'
 
-
 # Checks if a value exists in an array
 # Usage: elementIn "some_value" "${VALUES[@]}"; [[ #? -eq 0 ]] && echo "EXISTS!" || echo "DOESNT EXIST! :("
-elementIn () {
+function elementIn () {
   local e match="$1"
   shift
   for e; do [[ "$e" == "$match" ]] && return 0; done
   return 1
 }
 
-printUsage () {
+function printUsage () {
     set -e
     cat <<EOF
 AWS SSM parameter injection in Helm value files
@@ -166,8 +165,8 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    SECRET_TEXT=$(echo -e "${PARAM_OUTPUT}" | sed -E "s:([\$\.\*\[\\\^\&]):\\ \1:g" | sed -E "s/\ /\\\/g")
-    MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s:${PARAM_STRING}:${SECRET_TEXT}:g")
+    SECRET_TEXT=$(echo -e "${PARAM_OUTPUT}" | sed -e 's/[]\&\/$*.^[]/\\&/g')
+    MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s|${PARAM_STRING}|${SECRET_TEXT}|g")
     sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
 
