@@ -1,6 +1,9 @@
 # helm-ssm
 A low-dependency tool used to retrieves and injects secrets from AWS SSM Parameter Store.
 
+[![asciicast](https://asciinema.org/a/247712.png)](https://asciinema.org/a/247712)
+
+
 ## Installation
 ```bash
 $ helm plugin install https://github.com/totango/helm-ssm
