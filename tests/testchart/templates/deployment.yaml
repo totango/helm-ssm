@@ -25,4 +25,4 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SECRET
-              value: {{ .Values.secret }}
+              value: {{ .Values.secret | quote }}
