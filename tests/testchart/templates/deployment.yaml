@@ -2,27 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "testchart.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "testchart.name" . }}
-    helm.sh/chart: {{ include "testchart.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "testchart.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: {{ include "testchart.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: SECRET
+            - name: A_VERY_SECRET_PASSWORD
               value: {{ .Values.secret | quote }}
+

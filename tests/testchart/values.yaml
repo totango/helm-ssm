@@ -9,3 +9,5 @@ nameOverride: ""
 fullnameOverride: ""
 
 secret: "{{ssm /test/parameter us-east-1}}"
+
+
