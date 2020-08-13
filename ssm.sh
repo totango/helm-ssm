@@ -109,14 +109,9 @@ do
     shift
 done
 
-echo -e "${GREEN}[SSM]${NOC} Options: ${OPTIONS[@]}"
-echo -e "${GREEN}[SSM]${NOC} Value files: ${VALUE_FILES[@]}"
-
 set +e # we disable fail-dast because we want to give the user a proper error message in case we cant read the value file
 MERGED_TEXT=""
 for FILEPATH in "${VALUE_FILES[@]}"; do
-    echo -e "${GREEN}[SSM]${NOC} Reading ${FILEPATH}"
-
     if [[ ! -f ${FILEPATH} ]]; then
         echo -e "${RED}[SSM]${NOC} Error: open ${FILEPATH}: no such file or directory" >&2
         exit 1
@@ -136,14 +131,6 @@ done
 
 PARAMETERS=$(echo -e "${MERGED_TEXT}" | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns, delete empty lines
 PARAMETERS_LENGTH=$(echo "${PARAMETERS}" | grep -v '^$' | wc -l | xargs)
-if [ "${PARAMETERS_LENGTH}" != 0 ]; then
-    echo -e "${GREEN}[SSM]${NOC} Found $(echo "${PARAMETERS}" | grep -v '^$' | wc -l | xargs) parameters"
-    echo -e "${GREEN}[SSM]${NOC} Parameters: \n${PARAMETERS[@]}"
-else
-    echo -e "${GREEN}[SSM]${NOC} No parameters were found, continuing..."
-fi
-echo -e "==============================================="
-
 
 set +e
 # using 'while' instead of 'for' allows us to use newline as a delimiter instead of a space
