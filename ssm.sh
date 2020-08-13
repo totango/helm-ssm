@@ -171,7 +171,7 @@ while read -r PARAM_STRING; do
 done <<< "${PARAMETERS}"
 
 set +e
-echo -e "${MERGED_TEXT}" | helm "${OPTIONS[@]}" --values -
+echo -e "${MERGED_TEXT}" | _helm "${OPTIONS[@]}" --values -
 EXIT_CODE=$?
 if [[ ${EXIT_CODE} -ne 0 ]]; then
     echo -e "${RED}[SSM]${NOC} Helm exited with a non 0 code - this is most likely not a problem with the SSM plugin, but a problem with Helm itself." >&2
