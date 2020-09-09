@@ -152,7 +152,7 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    SECRET_TEXT="$(echo -e "${PARAM_OUTPUT}" | sed -e 's/[]\&\/$*.^[]/\\&/g'| sed -e ':a;N;$!ba;s/\n/\\\\n/g')"
+    SECRET_TEXT="$(echo -e "${PARAM_OUTPUT}" | sed -e 's/[]\&\/$*.^[]/\\&/g'| sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')"
     MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s|${PARAM_STRING}|${SECRET_TEXT}|g")
     sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
