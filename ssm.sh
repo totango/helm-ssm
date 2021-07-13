@@ -126,7 +126,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
     fi
 
     #VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g) # we turn single % to %% to escape percent signs
-    echo -e MERGED_TEXT "${MERGED_TEXT}\n${VALUE}" # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
+    MERGED_TEXT=$(echo -e "${MERGED_TEXT}\n${VALUE}") # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
 done
 
 PARAMETERS=$(echo -e "${MERGED_TEXT}" | grep -Eo "\{\{ssm [^\}]+\}\}") # Look for {{ssm /path/to/param us-east-1}} patterns, delete empty lines
