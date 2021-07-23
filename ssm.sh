@@ -117,7 +117,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    VALUE=$(cat ${FILEPATH} | grep -v '^ *#' 2> /dev/null) # read the content of the values file silently (without outputing an error in case it fails)
+    VALUE=$([[ ! -s ${FILEPATH} ]] && cat ${FILEPATH} | grep -qv '^ *#' 2> /dev/null) # read the content of the values file silently (without outputing an error in case it fails)
     EXIT_CODE=$?
 
     if [[ ${EXIT_CODE} -ne 0 ]]; then
