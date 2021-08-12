@@ -125,7 +125,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    VALUE=$(grep -v '^ *#' ${FILEPATH}) # read the content of the values file silently (without outputing an error in case it fails)
+    VALUE=$(grep -v '^ *#' ${FILEPATH} 2> /dev/null) # read the content of the values file silently (without outputing an error in case it fails) and ignore comments
 
     #VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g) # we turn single % to %% to escape percent signs
     MERGED_TEXT=$(echo -e "${MERGED_TEXT}\n${VALUE}") # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
