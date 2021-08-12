@@ -109,7 +109,7 @@ do
     shift
 done
 
-set +e # we disable fail-dast because we want to give the user a proper error message in case we cant read the value file
+set +e # we disable fail-fast because we want to give the user a proper error message in case we cant read the value file
 MERGED_TEXT=""
 for FILEPATH in "${VALUE_FILES[@]}"; do
     if [[ ! -f ${FILEPATH} ]]; then
@@ -117,13 +117,15 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    VALUE=$([[ ! -s ${FILEPATH} ]] && cat ${FILEPATH} | grep -qv '^ *#' 2> /dev/null) # read the content of the values file silently (without outputing an error in case it fails)
+    cat ${FILEPATH} 2> /dev/null
     EXIT_CODE=$?
 
     if [[ ${EXIT_CODE} -ne 0 ]]; then
         echo -e "${RED}[SSM]${NOC} Error: open ${FILEPATH}: failed to read contents" >&2
         exit 1
     fi
+
+    VALUE=$(grep -v '^ *#' ${FILEPATH}) # read the content of the values file silently (without outputing an error in case it fails)
 
     #VALUE=$(echo -e "${VALUE}" | sed s/\%/\%\%/g) # we turn single % to %% to escape percent signs
     MERGED_TEXT=$(echo -e "${MERGED_TEXT}\n${VALUE}") # We concat the files together with a newline in between using printf and put output into variable MERGED_TEXT
