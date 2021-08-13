@@ -117,7 +117,7 @@ for FILEPATH in "${VALUE_FILES[@]}"; do
         exit 1
     fi
 
-    cat ${FILEPATH} 2> /dev/null
+    cat ${FILEPATH} >/dev/null 2>&1
     EXIT_CODE=$?
 
     if [[ ${EXIT_CODE} -ne 0 ]]; then
