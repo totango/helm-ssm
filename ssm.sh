@@ -154,13 +154,13 @@ while read -r PARAM_STRING; do
         exit 1
     fi
 
-    SECRET_TEXT="$(echo -e "${PARAM_OUTPUT}" | sed -e 's/[]\&\/$*.^[]/\\&/g'| sed -E ':a;N;$!ba;s/\r{0,1}\n/_REPLACE_/g')"
+    SECRET_TEXT="$(echo -e "${PARAM_OUTPUT}" | sed -e 's/[]\&\/$*.^[]/\\&/g' | sed -e 's/$/_REPLACE_/g' | tr -d '\r' | tr -d '\n' | sed -e 's/_REPLACE_$//')"
     MERGED_TEXT=$(echo -e "${MERGED_TEXT}" | sed "s|${PARAM_STRING}|${SECRET_TEXT}|g")
     sleep 0.5 # very basic rate limits
 done <<< "${PARAMETERS}"
 
 set +e
-echo -e "${MERGED_TEXT}" | _helm "${OPTIONS[@]}" --values -
+echo -e "${MERGED_TEXT}" | "${HELM_BIN}" "${OPTIONS[@]}" --values -
 EXIT_CODE=$?
 if [[ ${EXIT_CODE} -ne 0 ]]; then
     echo -e "${RED}[SSM]${NOC} Helm exited with a non 0 code - this is most likely not a problem with the SSM plugin, but a problem with Helm itself." >&2
