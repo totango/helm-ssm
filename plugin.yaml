@@ -1,5 +1,5 @@
 name: "ssm"
-version: "1.0.4"
+version: "1.0.5"
 usage: "AWS SSM parameter injection into Helm value files for git storage"
 description: |-
   AWS SSM parameter injection in Helm value files
@@ -31,3 +31,4 @@ description: |-
   ---
 command: "$HELM_PLUGIN_DIR/ssm.sh"
 useTunnel: true
+
